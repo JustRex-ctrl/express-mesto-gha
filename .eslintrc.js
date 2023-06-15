@@ -1,7 +1,6 @@
 module.exports = {
     "env": {
         "node": true,
-        "commonjs": true,
         "es2021": true
     },
     "extends": [
@@ -15,5 +14,6 @@ module.exports = {
         "react"
     ],
     "rules": {
+      "no-underscore-dangle": ["error", {"allow": ["_id"]}]
     }
 }

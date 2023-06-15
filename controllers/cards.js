@@ -18,7 +18,7 @@ const postCard = (req, res) => {
   cardSchema.create({ name, link, owner: req.user._id })
     .then((card) => res.send(card))
     .catch((err) => {
-      if (err.name === 'CastError' || err.name === 'ValidationError') {
+      if (err.name === 'ValidationError') {
         return res.status(errInvalidData).send({ message: 'Incorrect data when creating card' });
       }
       return res.status(errDefault).send({ message: 'error on the server' });
@@ -50,7 +50,7 @@ const likeCard = (req, res) => {
       return res.send(card);
     })
     .catch((err) => {
-      if (err.name === 'CastError' || err.name === 'ValidationError') {
+      if (err.name === 'CastError') {
         return res.status(errInvalidData).send({ message: 'Incorrect data sent to like' });
       }
       return res.status(errDefault).send({ message: 'error on the server' });
@@ -68,7 +68,7 @@ const dislikeCard = (req, res) => {
       return res.send(card);
     })
     .catch((err) => {
-      if (err.name === 'CastError' || err.name === 'ValidationError') {
+      if (err.name === 'CastError') {
         return res.status(errInvalidData).send({ message: 'Incorrect data sent to delete like' });
       }
       return res.status(errDefault).send({ message: 'error on the server' });

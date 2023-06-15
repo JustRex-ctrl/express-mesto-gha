@@ -30,7 +30,7 @@ const postUser = (req, res) => {
   userSchema.create({ name, about, avatar })
     .then((user) => res.send(user))
     .catch((err) => {
-      if (err.name === 'CastError' || err.name === 'ValidationError') {
+      if (err.name === 'ValidationError') {
         return res.status(errInvalidData).send({ message: 'Incorrect data passed during user creation' });
       }
       return res.status(errDefault).send({ message: 'error on the server' });
@@ -49,7 +49,7 @@ const patchUser = (req, res) => {
       return res.send(user);
     })
     .catch((err) => {
-      if (err.name === 'CastError' || err.name === 'ValidationError') {
+      if (err.name === 'ValidationError') {
         return res.status(errInvalidData).send({ message: 'Incorrect data passed when updating user data' });
       }
       return res.status(errDefault).send({ message: 'error on the server' });
