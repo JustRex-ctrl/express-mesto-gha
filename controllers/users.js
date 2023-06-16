@@ -67,7 +67,7 @@ const patchAvatar = (req, res) => {
       return res.send(user);
     })
     .catch((err) => {
-      if (err.name === 'CastError' || err.name === 'ValidationError') {
+      if (err.name === 'ValidationError') {
         return res.status(errInvalidData).send({ message: 'Incorrect data passed when updating avatar' });
       }
       return res.status(errDefault).send({ message: 'error on the server' });
