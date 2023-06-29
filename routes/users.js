@@ -1,16 +1,18 @@
 const router = require('express').Router();
+const { celebrate } = require('celebrate');
 const {
   getUsers,
   getUserById,
-  postUser,
-  patchUser,
-  patchAvatar,
+  getUserInfo,
+  updateUser,
+  updateAvatar,
 } = require('../controllers/users');
+const { userIdSchema, avatarSchema, userUpdateSchema } = require('../middlewares/joi-schemas')
 
 router.get('/', getUsers);
-router.get('/:userId', getUserById);
-router.post('/', postUser);
-router.patch('/me', patchUser);
-router.patch('/me/avatar', patchAvatar);
+router.get('/:userId', celebrate({ params: userIdSchema }), getUserById);
+router.get('/me', getUserInfo);
+router.patch('/me', celebrate({ body: userUpdateSchema }), updateUser);
+router.patch('/me/avatar', celebrate({ body: avatarSchema }), updateAvatar);
 
 module.exports = router;

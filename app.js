@@ -1,31 +1,31 @@
 const express = require('express');
 const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
 const mongoose = require('mongoose');
 const router = require('./routes');
+const handleError = require('./middlewares/handleError');
+const { errors } = require('celebrate');
+const rateLimit = require('express-rate-limit');
 
+const { PORT = 3000, DB_URL = 'mongodb://127.0.0.1:27017/mestodb' } = process.env;
 const app = express();
-const { PORT = 3000 } = process.env;
+
+mongoose.connect(DB_URL, {
+  useNewUrlParser: true,
+});
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
   standardHeaders: true,
-  legacyHeaders: false
+  legacyHeaders: false,
 });
-
 app.use(limiter);
+
 app.use(helmet());
-app.use(express.json());
-
-mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {});
-
-app.use((req, res, next) => {
-  req.user = { _id: '648ae9b630f58e5cb11a16c8'};
-  next();
-});
-
 app.use(router);
+app.use(errors());
+app.use(handleError);
+
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
 });
