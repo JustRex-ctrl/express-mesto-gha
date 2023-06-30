@@ -3,11 +3,11 @@ const userRoutes = require('./users');
 const cardRoutes = require('./cards');
 const { celebrate } = require('celebrate');
 const auth = require('../middlewares/auth');
-const { userSchema, loginSchema } = require('../middlewares/joi-schemas')
+const { userValidSchema, loginSchema } = require('../middlewares/joi-schemas')
 const { login, createUser } = require('../controllers/users')
 const NotFoundError = require('../errors/NotFoundError')
 
-router.post('/signup', celebrate({ body: userSchema }), createUser);
+router.post('/signup', celebrate({ body: userValidSchema }), createUser);
 router.post('/signin', celebrate({ body: loginSchema }), login);
 router.use(auth);
 router.use('/users', userRoutes);

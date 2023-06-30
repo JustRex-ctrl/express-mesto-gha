@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const UnauthorizedError = require('../errors/NotAuthError');
+const NotAuthError = require('../errors/NotAuthError');
 
 module.exports = (req, res, next) => {
   const token = req.cookies.jwt;
@@ -7,7 +7,7 @@ module.exports = (req, res, next) => {
   try {
     payload = jwt.verify(token, 'secret-key');
   } catch (err) {
-    next(new UnauthorizedError('Invalid token'));
+    next(new NotAuthError('Invalid token'));
   }
   req.user = payload;
   next();

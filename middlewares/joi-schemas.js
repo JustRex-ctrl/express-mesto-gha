@@ -5,7 +5,7 @@ module.exports = {
     userId: Joi.string().required().hex().length(24),
   }),
 
-  userSchema: Joi.object().keys({
+  userValidSchema: Joi.object().keys({
     email: Joi.string().email({ minDomainSegments: 2 }).required().min(5),
     password: Joi.string().required().min(3),
     name: Joi.string().optional().min(2).max(30),

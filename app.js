@@ -1,7 +1,7 @@
 const express = require('express');
 const helmet = require('helmet');
 const mongoose = require('mongoose');
-const router = require('./routes');
+const router = require('./routes/index');
 const handleError = require('./middlewares/handleError');
 const { errors } = require('celebrate');
 const rateLimit = require('express-rate-limit');
