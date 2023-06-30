@@ -1,145 +1,74 @@
 const userSchema = require('../models/user');
-const BadRequestError = require('../errors/BadRequestError');
-const MongoDuplicateKeyError = require('../errors/MongoDuplicateKeyError');
+const NotAuthError = require('../errors/NotAuthError');
 const NotFoundError = require('../errors/NotFoundError');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const saltRounds = 10;
-
 const getUsers = (req, res, next) => {
-  userSchema
-    .find({})
-    .then((users) => res.status(200)
-      .send(users))
+  userSchema.find({})
+    .then((users) => res.send(users))
     .catch(next);
 };
 
 const getUserById = (req, res, next) => {
-  const { userId } = req.params;
-
-  userSchema
-    .findById(userId)
-    .orFail(new NotFoundError('non-existent user _id transferred'))
-    .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return next(new BadRequestError('Incorrect data passed during user creation'));
-      }
-      return next(err);
-    });
-};
-
-const getUser = (req, res, next) => {
-  userSchema
-    .findById(req.user._id)
-    .orFail(new NotFoundError('User is not found'))
+  userSchema.findById(req.params.userId)
+    .orFail(() => new NotFoundError('User by specified _id not found'))
     .then((user) => res.status(200).send(user))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        next(BadRequestError('Incorrect data sent'));
-      } else {
-        next(err);
-      }
-    });
+    .catch(next);
 };
 
 const createUser = (req, res, next) => {
-  const { name,
-    about,
-    avatar,
-    email,
-    password,
+  const {
+    name, about, avatar, email, password,
   } = req.body;
-
-  bcrypt.hash(password, saltRounds)
+  bcrypt.hash(password, 10)
     .then((hash) => {
-      userSchema
-        .create({ name,
-          about,
-          avatar,
-          email,
-          password: hash,
-        })
-        .then(() => res.status(201)
-          .send(
-            { data: {
-              name,
-              about,
-              avatar,
-              email,
-            },
-            },
-          ))
-        .catch((err) => {
-          if (err.code === 11000) {
-            return next(new MongoDuplicateKeyError('User with this email already exists'));
-          }
-          if (err.name === 'ValidationError') {
-            return next(new BadRequestError('Incorrect data passed during user creation'));
-          }
-          return next(err);
-        });
+      userSchema.create({
+        name, about, avatar, email, password: hash,
+      })
+        .then((user) => res.status(201).send(user.deletePassword()))
+        .catch(next);
     })
     .catch(next);
 };
 
 const updateUser = (req, res, next) => {
-  const { name,
-          about,
-        } = req.body;
-
-  userSchema
-    .findByIdAndUpdate(
-      req.user._id,
-      { name,
-        about,
-      },
-      { new: true,
-        runValidators: true,
-      },
-    )
-    .orFail(new NotFoundError('non-existent user _id transferred'))
-    .then((user) => res.status(200)
-      .send(user))
-    .catch((err) => {
-      if (err.name === 'CastError' || err.name === 'ValidationError') {
-        return next(new BadRequestError('Invalid data passed when updating profile'));
-      }
-      return next(err);
-    });
+  const { name, about } = req.body;
+  userSchema.findByIdAndUpdate(
+    req.user._id,
+    { name, about },
+    { new: true, runValidators: true },)
+    .orFail(() => new NotFoundError('User by specified _id not found'))
+    .then((user) => res.send(user))
+    .catch(next);
 };
 
 const updateAvatar = (req, res, next) => {
-  const { avatar } = req.body;
-
-  userSchema
-    .findByIdAndUpdate(
-      req.user._id,
-      { avatar },
-      {new: true,
-       runValidators: true,
-      },
-    )
-    .orFail(new NotFoundError('User avatar by specified _id not found'))
-    .then((user) => res.status(200)
-      .send(user))
-    .catch((err) => {
-      if (err.name === 'CastError' || err.name === 'ValidationError') {
-        return next(new BadRequestError('Incorrect data passed when updating avatar'));
-      }
-      return next(err);
-    });
+  userSchema.findByIdAndUpdate(
+    req.user._id,
+    { avatar: req.body.avatar },
+    { new: true, runValidators: true },)
+    .then((user) => res.send(user))
+    .catch(next);
 };
 
 const login = (req, res, next) => {
   const { email, password } = req.body;
-
-  return userSchema
-    .findUserByCredentials(email, password)
+  userSchema.findOne({ email })
+    .select('+password')
+    .orFail(() => new NotAuthError())
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'JWT-secret', { expiresIn: '7d' });
-      res.send({ token });
+      bcrypt.compare(String(password), user.password)
+        .then((isUserValid) => {
+          if (isUserValid) {
+            const token = jwt.sign({ _id: user._id }, 'secret-key');
+            res.cookie('jwt', token, { maxAge: 3600000 * 24 * 7, httpOnly: true });
+            res.send(user.deletePassword());
+          } else {
+            throw new NotAuthError();
+          }
+        })
+        .catch(next);
     })
     .catch(next);
 };
@@ -153,10 +82,9 @@ const getUserInfo = (req, res, next) => {
 module.exports = {
   getUsers,
   getUserById,
-  getUser,
   createUser,
   updateUser,
   updateAvatar,
   login,
-  getUserInfo
+  getUserInfo,
 };
