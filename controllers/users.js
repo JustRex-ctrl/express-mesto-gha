@@ -77,7 +77,7 @@ const login = (req, res, next) => {
 };
 
 const getUserInfo = (req, res, next) => {
-  userSchema.findOne({ _id: req.user })
+  userSchema.findOne({ _id: req.user._id })
     .then((user) => res.send(user))
     .catch(next);
 };

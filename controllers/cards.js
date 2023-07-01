@@ -9,9 +9,7 @@ const getCards = (req, res, next) => {
       console.log('cards',cards);
       res.send(cards);
     })
-    .catch((next)=>{
-      console.log('cath');
-    });
+    .catch(next);
 };
 
 const postCard = (req, res, next) => {
