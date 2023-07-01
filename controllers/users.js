@@ -19,11 +19,22 @@ const getUserById = (req, res, next) => {
     userId = req.user._id;
   }
 
-  userSchema.findById(userId)
-    .orFail(() => new NotFoundError('Пользователь по указанному _id не найден'))
-    .then((user) => res.status(200).send(user))
-    .catch(next);
-};
+  userSchema
+  .findById(userId)
+  .orFail()
+  .then((user) => res.status(200).send(user))
+  .catch((err) => {
+    if (err.name === 'CastError') {
+      return next(new NotFoundError('Invalid data when get user'));
+    }
+
+    if (err.name === 'DocumentNotFoundError') {
+      return next(new NotFoundError(`User Id: ${userId} is not found`));
+    }
+
+    return next(res);
+
+  })};
 
 const createUser = (req, res, next) => {
   const {
@@ -86,7 +97,7 @@ const login = (req, res, next) => {
 
 const getUserInfo = (req, res, next) => {
   console.log('getUserInfo');
-  userSchema.findOne({ _id: req.user._id })
+  userSchema.findOne({ _id: req.user })
     .then((user) => res.send(user))
     .catch(next);
 };
