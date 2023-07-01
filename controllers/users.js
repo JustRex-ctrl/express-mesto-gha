@@ -59,7 +59,7 @@ const updateUser = (req, res, next) => {
     { name, about },
     { new: true, runValidators: true },
   )
-    .orFail(() => new NotFoundError('Пользователь по указанному _id не найден'))
+    .orFail(() => new NotFoundError('User by specified _id not found'))
     .then((user) => res.send(user))
     .catch(next);
 };
