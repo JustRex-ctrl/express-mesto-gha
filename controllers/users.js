@@ -11,7 +11,15 @@ const getUsers = (req, res, next) => {
 };
 
 const getUserById = (req, res, next) => {
-  userSchema.findById(req.params.userId)
+  let userId;
+
+  if (req.params.id) {
+    userId = req.params.id;
+  } else {
+    userId = req.user._id;
+  }
+
+  userSchema.findById(userId)
     .orFail(() => new NotFoundError('Пользователь по указанному _id не найден'))
     .then((user) => res.status(200).send(user))
     .catch(next);
@@ -77,6 +85,7 @@ const login = (req, res, next) => {
 };
 
 const getUserInfo = (req, res, next) => {
+  console.log('getUserInfo');
   userSchema.findOne({ _id: req.user._id })
     .then((user) => res.send(user))
     .catch(next);
