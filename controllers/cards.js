@@ -21,11 +21,11 @@ const postCard = (req, res, next) => {
 
 const deleteCard = (req, res, next) => {
   cardSchema.findOne({ _id: req.params.cardId })
-    .orFail(() => new NotFoundError('Такой карточки не существует'))
+    .orFail(() => new NotFoundError('This card does not exist'))
     .then((card) => {
       const cardOwner = card.owner.toString();
       if (cardOwner !== req.user._id) {
-        throw new ForbiddenError('Попытка удалить карточку другого пользователя');
+        throw new ForbiddenError('Attempt to remove another users card');
       } else {
         const cardId = card._id.toString();
         cardSchema.deleteOne({ _id: cardId })
@@ -42,7 +42,7 @@ const likeCard = (req, res, next) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .orFail(() => new NotFoundError('Передан несуществующий _id карточки'))
+    .orFail(() => new NotFoundError('Passed non-existent card _id'))
     .then((card) => res.send(card))
     .catch(next);
 };
@@ -52,7 +52,7 @@ const dislikeCard = (req, res, next) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .orFail(() => new NotFoundError('Передан несуществующий _id карточки'))
+    .orFail(() => new NotFoundError('Passed non-existent card _id'))
     .then((card) => res.send(card))
     .catch(next);
 };
