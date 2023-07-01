@@ -59,7 +59,7 @@ const login = (req, res, next) => {
   const { email, password } = req.body;
   userSchema.findOne({ email })
     .select('+password')
-    .orFail(() => new NotAuthError())
+    .orFail(() => new NotAuthError('Not valid user'))
     .then((user) => {
       bcrypt.compare(String(password), user.password)
         .then((isUserValid) => {
@@ -68,7 +68,7 @@ const login = (req, res, next) => {
             res.cookie('jwt', token, { maxAge: 3600000 * 24 * 7, httpOnly: true });
             res.send(user.deletePassword());
           } else {
-            throw new NotAuthError();
+            throw new NotAuthError('Not valid user');
           }
         })
         .catch(next);
