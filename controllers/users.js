@@ -12,7 +12,7 @@ const getUsers = (req, res, next) => {
 
 const getUserById = (req, res, next) => {
   userSchema.findById(req.params.userId)
-    .orFail(() => new NotFoundError('User by specified _id not found'))
+    .orFail(() => new NotFoundError('Пользователь по указанному _id не найден'))
     .then((user) => res.status(200).send(user))
     .catch(next);
 };
@@ -37,8 +37,9 @@ const updateUser = (req, res, next) => {
   userSchema.findByIdAndUpdate(
     req.user._id,
     { name, about },
-    { new: true, runValidators: true },)
-    .orFail(() => new NotFoundError('User by specified _id not found'))
+    { new: true, runValidators: true },
+  )
+    .orFail(() => new NotFoundError('Пользователь по указанному _id не найден'))
     .then((user) => res.send(user))
     .catch(next);
 };
@@ -47,7 +48,8 @@ const updateAvatar = (req, res, next) => {
   userSchema.findByIdAndUpdate(
     req.user._id,
     { avatar: req.body.avatar },
-    { new: true, runValidators: true },)
+    { new: true, runValidators: true },
+  )
     .then((user) => res.send(user))
     .catch(next);
 };
