@@ -13,8 +13,8 @@ const getUsers = (req, res, next) => {
 const getUserById = (req, res, next) => {
   let userId;
 
-  if (req.params.id) {
-    userId = req.params.id;
+  if (req.params.userId) {
+    userId = req.params.userId;
   } else {
     userId = req.user._id;
   }
@@ -35,6 +35,7 @@ const getUserById = (req, res, next) => {
     return next(res);
 
   })};
+
 
 const createUser = (req, res, next) => {
   const {
@@ -109,5 +110,5 @@ module.exports = {
   updateUser,
   updateAvatar,
   login,
-  getUserInfo,
+  getUserInfo
 };
