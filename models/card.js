@@ -12,7 +12,6 @@ const cardSchema = new mongoose.Schema({
     type: String,
     validate: {
       validator: (v) => linkRegValid.isURL(v),
-      message: 'Enter valid link',
     },
     required: true,
   },
