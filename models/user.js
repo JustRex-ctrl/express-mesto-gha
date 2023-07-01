@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const validator = require('validator');
+const { linkRegValid } = require('../middlewares/linkRegValid');
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -7,13 +7,13 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
     validate: {
-      validator: (email) => validator.isEmail(email),
+      validator: (email) => linkRegValid.isEmail(email),
     },
   },
   avatar: {
     type: String,
     validate: {
-      validator: (link) => validator.test(link),
+      validator: (link) => linkRegValid.test(link),
     },
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png'
   },

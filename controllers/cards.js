@@ -44,6 +44,7 @@ const likeCard = (req, res, next) => {
     .then((card) => res.send(card))
     .catch(next);
 };
+
 const dislikeCard = (req, res, next) => {
   cardSchema.findByIdAndUpdate(
     req.params.cardId,
