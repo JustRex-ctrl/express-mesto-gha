@@ -1,6 +1,6 @@
 const cardSchema = require('../models/card');
-const NotFoundError = require('../errors/NotFoundError');
-const ForbiddenError = require('../errors/ForbiddenError');
+const NotFoundError = require('../errors/NotFoundError'); //404
+const ForbiddenError = require('../errors/ForbiddenError'); //403
 
 const getCards = (req, res, next) => {
   cardSchema.find({})
@@ -51,7 +51,7 @@ const dislikeCard = (req, res, next) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .orFail(() => new ForbiddenError('Passed non-existent card _id'))
+    .orFail(() => new NotFoundError('Passed non-existent card _id'))
     .then((card) => res.send(card))
     .catch(next);
 };
