@@ -6,7 +6,8 @@ module.exports = (req, res, next) => {
   let payload;
   try {
     payload = jwt.verify(token, 'secret-key');
-  } catch (err) {
+  } catch (err)
+  {
     next(new NotAuthError('Invalid token'));
   }
   req.user = payload;

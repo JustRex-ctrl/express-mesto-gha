@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const validator = require('validator');
 const { linkRegValid } = require('../middlewares/linkRegValid');
 
 const userSchema = new mongoose.Schema({
@@ -7,7 +8,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
     validate: {
-      validator: (email) => linkRegValid.isEmail(email),
+      validator: (email) => validator.isEmail(email),
     },
   },
   avatar: {
