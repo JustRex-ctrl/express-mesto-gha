@@ -55,6 +55,7 @@ const updateAvatar = (req, res, next) => {
 };
 
 const login = (req, res, next) => {
+  console.log('33');
   const { email, password } = req.body;
   userSchema.findOne({ email })
     .select('+password')

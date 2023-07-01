@@ -3,11 +3,15 @@ const NotFoundError = require('../errors/NotFoundError'); //404
 const ForbiddenError = require('../errors/ForbiddenError'); //403
 
 const getCards = (req, res, next) => {
-  cardSchema.find({})
+  console.log('232');
+  cardSchema.find()
     .then((cards) => {
+      console.log('cards',cards);
       res.send(cards);
     })
-    .catch(next);
+    .catch((next)=>{
+      console.log('cath');
+    });
 };
 
 const postCard = (req, res, next) => {
