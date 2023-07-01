@@ -5,6 +5,7 @@ const router = require('./routes/index');
 const handleError = require('./middlewares/handleError');
 const { errors } = require('celebrate');
 const rateLimit = require('express-rate-limit');
+const cookieParser = require('cookie-parser');
 
 const { PORT = 3000, DB_URL = 'mongodb://127.0.0.1:27017/mestodb' } = process.env;
 const app = express();
@@ -22,6 +23,7 @@ const limiter = rateLimit({
 app.use(limiter);
 
 app.use(helmet());
+app.use(cookieParser());
 app.use(router);
 app.use(errors());
 app.use(handleError);
