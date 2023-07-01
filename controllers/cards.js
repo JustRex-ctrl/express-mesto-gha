@@ -1,7 +1,6 @@
 const cardSchema = require('../models/card');
 const NotFoundError = require('../errors/NotFoundError');
 const ForbiddenError = require('../errors/ForbiddenError');
-const BadRequestError = require('../errors/BadRequestError');
 
 const getCards = (req, res, next) => {
   cardSchema.find({})
@@ -52,21 +51,9 @@ const dislikeCard = (req, res, next) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .then((card) => {
-      if (!card) {
-        return next(new NotFoundError(`Card Id: ${req.params.cardId} is not found`));
-      }
-
-      return res.status(200)
-        .send(card);
-    })
-    .catch((err) => {
-      if (err.name === 'CastError' || err.name === 'ValidationError') {
-        return next(new BadRequestError('Invalid data when delete card like'));
-      }
-
-      return next(err);
-    });
+    .orFail(() => new ForbiddenError('Passed non-existent card _id'))
+    .then((card) => res.send(card))
+    .catch(next);
 };
 
 module.exports = {
