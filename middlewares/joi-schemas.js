@@ -1,4 +1,5 @@
 const { Joi } = require('celebrate');
+const { linkRegValid } = require('./linkRegValid');
 
 module.exports = {
   userIdSchema: Joi.object().keys({
@@ -10,7 +11,7 @@ module.exports = {
     password: Joi.string().required().min(3),
     name: Joi.string().optional().min(2).max(30),
     about: Joi.string().optional().min(2).max(30),
-    avatar: Joi.string().optional().uri({ scheme: ['http', 'https'] }).min(5),
+    avatar: Joi.string().pattern(linkRegValid)
   }),
 
   userUpdateSchema: Joi.object().keys({
@@ -19,7 +20,7 @@ module.exports = {
   }),
 
   avatarSchema: Joi.object().keys({
-    avatar: Joi.string().optional().uri({ scheme: ['http', 'https'] }).min(5),
+    avatar: Joi.string().pattern(linkRegValid)
   }),
 
   loginSchema: Joi.object().keys({
@@ -29,7 +30,7 @@ module.exports = {
 
   cardSchema: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    link: Joi.string().required().uri({ scheme: ['http', 'https'] }),
+    avatar: Joi.string().pattern(linkRegValid)
   }),
 
   cardIdSchema: Joi.object().keys({
