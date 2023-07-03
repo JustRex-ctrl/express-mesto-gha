@@ -16,7 +16,12 @@ const postCard = (req, res, next) => {
   const { name, link } = req.body;
   cardSchema.create({ name, link, owner: req.user._id })
     .then((card) => res.status(201).send(card))
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return next(new NotFoundError('Invalid data when post card'));
+      }
+      return next(err);
+    });
 };
 
 const deleteCard = (req, res, next) => {

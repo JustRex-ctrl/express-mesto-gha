@@ -1,6 +1,7 @@
 const userSchema = require('../models/user');
 const NotAuthError = require('../errors/NotAuthError');
 const NotFoundError = require('../errors/NotFoundError');
+const MongoDuplicateKeyError = require('../errors/MongoDuplicateKeyError');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
@@ -49,7 +50,17 @@ const createUser = (req, res, next) => {
         .then((user) => res.status(201).send(user.deletePassword()))
         .catch(next);
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.code === 11000) {
+        return next(new MongoDuplicateKeyError('User with such a email is already registered'));
+      }
+
+      if (err.name === 'ValidationError') {
+        return next(new NotFoundError('Invalid data when post user'));
+      }
+
+      return next(err);
+    });
 };
 
 const updateUser = (req, res, next) => {
