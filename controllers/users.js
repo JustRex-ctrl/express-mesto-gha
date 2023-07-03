@@ -72,7 +72,12 @@ const updateUser = (req, res, next) => {
   )
     .orFail(() => new NotFoundError('User by specified _id not found'))
     .then((user) => res.send(user))
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return next(new NotFoundError('Invalid data when update user'));
+      }
+      return next(err);
+    });
 };
 
 const updateAvatar = (req, res, next) => {
@@ -82,7 +87,12 @@ const updateAvatar = (req, res, next) => {
     { new: true, runValidators: true },
   )
     .then((user) => res.send(user))
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        return next(new NotFoundError('Invalid data when update avatar'));
+      }
+      return next(err);
+    });
 };
 
 const login = (req, res, next) => {
