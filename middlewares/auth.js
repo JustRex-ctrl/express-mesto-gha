@@ -4,7 +4,7 @@ const NotAuthError = require('../errors/NotAuthError');
 module.exports = (req, res, next) => {
   const token = req.cookies.jwt;
   if (!token) {
-    return res.status(NotAuthError).json({message: "Not authorized"})
+    return res.status(401).json({message: "Not auth error"})
 }
   let payload;
   try {
