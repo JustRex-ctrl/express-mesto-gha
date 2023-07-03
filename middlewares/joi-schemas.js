@@ -14,11 +14,8 @@ module.exports = {
   }),
 
   userUpdateSchema: Joi.object().keys({
-    email: Joi.string().email({ minDomainSegments: 2 }).optional().min(5),
-    password: Joi.string().optional().min(3),
     name: Joi.string().optional().min(2).max(30),
     about: Joi.string().optional().min(2).max(30),
-    avatar: Joi.string().optional().uri({ scheme: ['http', 'https'] }).min(5),
   }),
 
   avatarSchema: Joi.object().keys({
