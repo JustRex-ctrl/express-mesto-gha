@@ -7,7 +7,7 @@ const {
   updateUser,
   updateAvatar,
 } = require('../controllers/users');
-const { userIdSchema, avatarSchema, userUpdateSchema } = require('../middlewares/joi-schemas')
+const { userIdSchema, avatarSchema, userUpdateSchema } = require('../middlewares/joi-schemas');
 
 router.get('/', getUsers);
 router.get('/me', getUserById);

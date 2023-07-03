@@ -1,12 +1,12 @@
 const cardSchema = require('../models/card');
-const NotFoundError = require('../errors/NotFoundError'); //404
-const ForbiddenError = require('../errors/ForbiddenError'); //403
+const NotFoundError = require('../errors/NotFoundError');
+const ForbiddenError = require('../errors/ForbiddenError');
 
 const getCards = (req, res, next) => {
   console.log('232');
   cardSchema.find()
     .then((cards) => {
-      console.log('cards',cards);
+      console.log('cards', cards);
       res.send(cards);
     })
     .catch(next);
