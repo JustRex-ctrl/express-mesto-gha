@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema({
     validate: {
       validator: (link) => linkRegValid.test(link),
     },
-    default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png'
+    default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
   },
   password: {
     type: String,
@@ -34,7 +34,7 @@ const userSchema = new mongoose.Schema({
     minlength: 2,
     maxlength: 30,
     default: 'Исследователь',
-  }
+  },
 });
 
 userSchema.methods.deletePassword = function () {

@@ -1,9 +1,9 @@
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const userSchema = require('../models/user');
 const NotAuthError = require('../errors/NotAuthError');
 const NotFoundError = require('../errors/NotFoundError');
 const MongoDuplicateKeyError = require('../errors/MongoDuplicateKeyError');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 
 const getUsers = (req, res, next) => {
   userSchema.find({})
@@ -21,22 +21,21 @@ const getUserById = (req, res, next) => {
   }
 
   userSchema
-  .findById(userId)
-  .orFail()
-  .then((user) => res.status(200).send(user))
-  .catch((err) => {
-    if (err.name === 'CastError') {
-      return next(new NotFoundError('Invalid data when get user'));
-    }
+    .findById(userId)
+    .orFail()
+    .then((user) => res.status(200).send(user))
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return next(new NotFoundError('Invalid data when get user'));
+      }
 
-    if (err.name === 'DocumentNotFoundError') {
-      return next(new NotFoundError(`User Id: ${userId} is not found`));
-    }
+      if (err.name === 'DocumentNotFoundError') {
+        return next(new NotFoundError(`User Id: ${userId} is not found`));
+      }
 
-    return next(res);
-
-  })};
-
+      return next(res);
+    });
+};
 
 const createUser = (req, res, next) => {
   const {
@@ -48,17 +47,17 @@ const createUser = (req, res, next) => {
         name, about, avatar, email, password: hash,
       })
         .then((user) => res.status(201).send(user.deletePassword()))
+        .catch((err) => {
+          if (err.code === 11000) {
+            return next(new MongoDuplicateKeyError('A user with such a email is already registered'));
+          }
 
-    })
-    .catch((err) => {
-      if (err.code === 11000) {
-        return next(new MongoDuplicateKeyError('User with such a email is already registered'));
-      }
-      if (err.name === 'ValidationError') {
-        return next(new NotFoundError('Invalid data when post user'));
-      }
+          if (err.name === 'ValidationError') {
+            return next(new NotFoundError('Invalid data when post user'));
+          }
 
-      return next(err);
+          return next(err);
+        });
     })
     .catch(next);
 };
@@ -72,12 +71,7 @@ const updateUser = (req, res, next) => {
   )
     .orFail(() => new NotFoundError('User by specified _id not found'))
     .then((user) => res.send(user))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return next(new NotFoundError('Invalid data when update user'));
-      }
-      return next(err);
-    });
+    .catch(next);
 };
 
 const updateAvatar = (req, res, next) => {
@@ -87,12 +81,7 @@ const updateAvatar = (req, res, next) => {
     { new: true, runValidators: true },
   )
     .then((user) => res.send(user))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return next(new NotFoundError('Invalid data when update avatar'));
-      }
-      return next(err);
-    });
+    .catch(next);
 };
 
 const login = (req, res, next) => {
@@ -131,5 +120,5 @@ module.exports = {
   updateUser,
   updateAvatar,
   login,
-  getUserInfo
+  getUserInfo,
 };

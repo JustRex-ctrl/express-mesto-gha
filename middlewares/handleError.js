@@ -1,4 +1,5 @@
 const handleError = (err, req, res, next) => {
+  console.log('44');
   const statusCode = err.statusCode || 500;
 
   const message = statusCode === 500 ? 'An error occurred on the server' : err.message;
