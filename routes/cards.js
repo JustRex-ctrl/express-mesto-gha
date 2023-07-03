@@ -9,7 +9,7 @@ const {
   dislikeCard,
 } = require('../controllers/cards');
 
-const { cardSchema, cardIdSchema } = require('../middlewares/joi-schemas')
+const { cardSchema, cardIdSchema } = require('../middlewares/joi-schemas');
 
 router.get('/', getCards);
 router.post('/', celebrate({ body: cardSchema }), postCard);
