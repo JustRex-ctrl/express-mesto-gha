@@ -48,19 +48,19 @@ const createUser = (req, res, next) => {
         name, about, avatar, email, password: hash,
       })
         .then((user) => res.status(201).send(user.deletePassword()))
-        .catch(next);
+
     })
     .catch((err) => {
       if (err.code === 11000) {
         return next(new MongoDuplicateKeyError('User with such a email is already registered'));
       }
-
       if (err.name === 'ValidationError') {
         return next(new NotFoundError('Invalid data when post user'));
       }
 
       return next(err);
-    });
+    })
+    .catch(next);
 };
 
 const updateUser = (req, res, next) => {
