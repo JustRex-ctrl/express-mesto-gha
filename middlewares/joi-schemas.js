@@ -1,9 +1,9 @@
 const { Joi } = require('celebrate');
-const linkRegValid = require('./linkRegValid');
+const isURL = require('validator/lib/isURL');
 const BadRequestError = require('../errors/BadRequestError');
 
 const validUrl = (url) => {
-  if (linkRegValid(url)) {
+  if (isURL(url)) {
     return url;
   }
   throw new BadRequestError('Enter a valid link URL');
