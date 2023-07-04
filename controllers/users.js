@@ -4,6 +4,7 @@ const userSchema = require('../models/user');
 const NotAuthError = require('../errors/NotAuthError');
 const NotFoundError = require('../errors/NotFoundError');
 const MongoDuplicateKeyError = require('../errors/MongoDuplicateKeyError');
+const BadRequestError = require('../errors/BadRequestError');
 
 const getUsers = (req, res, next) => {
   userSchema.find({})
@@ -71,7 +72,13 @@ const updateUser = (req, res, next) => {
   )
     .orFail(() => new NotFoundError('User by specified _id not found'))
     .then((user) => res.send(user))
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new BadRequestError('Incorrect data when updating a user'));
+      } else {
+        next(err);
+      }
+    });
 };
 
 const updateAvatar = (req, res, next) => {
@@ -81,7 +88,13 @@ const updateAvatar = (req, res, next) => {
     { new: true, runValidators: true },
   )
     .then((user) => res.send(user))
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        next(new BadRequestError('Incorrect data when updating avatar'));
+      } else {
+        next(err);
+      }
+    });
 };
 
 const login = (req, res, next) => {
